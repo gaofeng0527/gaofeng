@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 配置文件 -->
+	<context:property-placeholder location="classpath:application.properties" />
+	<!-- 扫描控制器 -->
+	<context:component-scan base-package="com.gaofeng.controller"></context:component-scan>
+	<context:component-scan base-package="com.gaofeng.controller.wx"></context:component-scan>
+	<context:component-scan base-package="cn.afterturn.easypoi.view">
+	</context:component-scan>
+	<!-- 注解映射支持 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<!-- StringHttpMessageConverter 编码为UTF-8，防止乱码 -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+				<property name="supportedMediaTypes">
+					<list>
+						<bean class="org.springframework.http.MediaType">
+							<constructor-arg index="0" value="text" />
+							<constructor-arg index="1" value="plain" />
+							<constructor-arg index="2" value="UTF-8" />
+						</bean>
+						<bean class="org.springframework.http.MediaType">
+							<constructor-arg index="0" value="*" />
+							<constructor-arg index="1" value="*" />
+							<constructor-arg index="2" value="UTF-8" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+			<!-- FastJson -->
+			<bean
+				class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=UTF-8</value>
+						<value>application/json;charset=UTF-8</value>
+					</list>
+				</property>
+				<property name="fastJsonConfig">
+					<bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+						<property name="features">
+							<list>
+								<value>AllowArbitraryCommas</value>
+								<value>AllowUnQuotedFieldNames</value>
+								<value>DisableCircularReferenceDetect</value>
+							</list>
+						</property>
+						<property name="dateFormat" value="yyyy-MM-dd HH:mm:ss" />
+					</bean>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- 使用 thymeleaf 模版 -->
+	<bean id="templateResolver"
+		class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+		<property name="order" value="3"></property>
+		<property name="prefix" value="/WEB-INF/page/" /> <!-- 模版文件放在 page 目录下 -->
+		<property name="suffix" value=".html"></property>
+		<property name="templateMode" value="HTML" />
+		<property name="characterEncoding" value="UTF-8"></property>
+		<property name="cacheable" value="${thymeleafCacheable}" /> <!-- cacheable 线上环境用 true，开发环境用 false -->
+	</bean>
+	<bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+	<bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+		<property name="characterEncoding" value="UTF-8" />
+	</bean>
+	<bean id="beanNameViewResolver"
+		class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="0"></property>
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大值 -->
+		<property name="maxUploadSize" value="1048576000"></property>
+		<!-- 多大的文件会被保存在磁盘上 -->
+		<property name="maxInMemorySize" value="4096" />
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<!-- 静态资源的访问，如 js, css, jpg, png -->
+	<!-- 如 HTML 里访问 /static/js/foo.js, 则实际访问的是 /WEB-INF/static/js/foo.js cache-period="31556926" -->
+	<mvc:resources mapping="/static/js/**" location="/WEB-INF/static/js/" />
+	<mvc:resources mapping="/static/css/**" location="/WEB-INF/static/css/" />
+	<mvc:resources mapping="/static/images/**" location="/WEB-INF/static/images/" />
+	<mvc:resources mapping="/static/html/**" location="/WEB-INF/static/html/" />
+	<mvc:resources mapping="/static/json/**" location="/WEB-INF/static/json/" />
+	<mvc:resources mapping="/static/doc/**" location="/WEB-INF/static/doc/" />
+	<mvc:resources mapping="/static/layui/**" location="/WEB-INF/static/layui/" />
+</beans>

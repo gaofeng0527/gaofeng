@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+<title>宽带报装&nbsp;-&nbsp;下一步</title>
+</head>
+<body>
+	<form action="verify" class="layui-form" style="width: 90%;"
+		method="post">
+		<div class="layui-form-item">
+			<label class="layui-form-label">输入姓名</label>
+			<div class="layui-input-block">
+				<input type="text" name="uname" class="layui-input"
+					lay-verify="required" th:value="${wxUser.uname}"
+					placeholder="请输入姓名">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系电话</label>
+			<div class="layui-input-block">
+				<input type="text" name="uphone" id="uphone"
+					th:value="${wxUser.uphone}" class="layui-input"
+					lay-verify="required|phone" placeholder="请输入联系电话">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">验证码</label>
+			<div class="layui-input-inline">
+				<input type="text" name="vcode" id="vcode" required
+					lay-verify="vcode" placeholder="请输入验证码" class="layui-input">
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				<button class="layui-btn" type="button" id="sendbutton"
+					lay-filter="send">发送验证码</button>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">身份证号</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" th:value="${wxUser.cardId}"
+					name="cardId" lay-verify="required|identity" placeholder="请输入身份证号">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">省市区</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" th:value="${city}"
+					name="area" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">详细地址</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="address"
+					th:value="${wxUser.address}" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" type="submit" lay-submit=""
+					lay-filter="verify">确认信息</button>
+				<a th:href="@{backOne}" class="layui-btn">上 一 步</a>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"
+		src="static/layui/layui.js"></script>
+	<script type="text/javascript">
+		var InterValObj; //timer变量，控制时间  
+		var count = 120; //间隔函数，1秒执行  
+		var curCount;//当前剩余秒数  
+		var code = ""; //验证码  
+		var codeLength = 6;//验证码长度  
+		var $;
+		var form;
+		var layer;
+
+		function sendMsg() {
+			curCount = count;
+			var jbPhone = $("#uphone").val();
+			if (jbPhone != "") {
+				// 设置button效果，开始计时  
+				$("#sendbutton").toggleClass("layui-btn-disabled");
+				$("#sendbutton").attr("disabled", "true");
+				$("#sendbutton").html("请在" + curCount + "秒内输入验证码");
+				InterValObj = window.setInterval(SetRemainTime, 1000); // 启动计时器，1秒执行一次  
+				// 向后台发送处理数据  
+				$.ajax({
+					url : "/gaofeng/msg/send", // 目标地址  
+					type : "post",
+					dataType : "json",
+					data : {
+						phone : jbPhone
+					},
+					success : function(data) {
+						console.log(data);
+						if (data.code == 1) {
+							layer.msg('短信验证码已发到您的手机,请查收', {
+								icon : 1
+							});
+						} else if (data.code == 0) {
+							layer.msg('短信验证码发送失败，请确定手机号码后，重新发送', {
+								icon : 2
+							});
+						} else if (data.code == 2) {
+							layer.msg('该手机号码今天发送验证码过多', {
+								icon : 2
+							});
+						}
+					}
+				});
+			} else {
+				layer.msg('手机号不能为空', {
+					icon : 2
+				});
+			}
+		}
+
+		//timer处理函数  
+		function SetRemainTime() {
+			if (curCount == 0) {
+				window.clearInterval(InterValObj);// 停止计时器  
+				$("#sendbutton").removeAttr("disabled");// 启用按钮  
+				$("#sendbutton").toggleClass("layui-btn-disabled");
+				$("#sendbutton").html("重新发送验证码");
+			} else {
+				curCount--;
+				$("#sendbutton").html("请在" + curCount + "秒内输入验证码");
+			}
+		}
+
+		layui.config({
+			base : "js/"
+		}).use([ 'form', 'layer', 'jquery' ], function() {
+			form = layui.form(), layer = layui.layer, $ = layui.jquery;
+			$("#sendbutton").click(function() {
+				sendMsg();
+			});
+
+			$("#vcode").blur(function() {
+				var code = $("#vcode").val();
+				var phone = $("#uphone").val();
+				if (code && phone) {
+					$.ajax({
+						url : "/gaofeng/msg/checkCode", // 目标地址  
+						type : "post",
+						dataType : "json",
+						data : {
+							code : code,
+							phone : phone
+						},
+						success : function(data) {
+							console.log(data);
+							if (data.code == 1) {
+								layer.msg('验证码有误，请确认后重新输入', {
+									icon : 2
+								});
+							} else if (data.code == 0) {
+								layer.msg('验证码过期，请重新获取', {
+									icon : 2
+								});
+							} else if (data.code == 2) {
+								layer.msg('验证成功', {
+									icon : 1
+								});
+							}
+						}
+					});
+				}
+			});
+
+			form.on("submit(verify)", function(data) {
+				var code = $("#vcode").val();
+				var phone = $("#uphone").val();
+				if (code && phone) {
+					$.ajax({
+						url : "/gaofeng/msg/checkCode", // 目标地址  
+						type : "post",
+						dataType : "json",
+						data : {
+							code : code,
+							phone : phone
+						},
+						success : function(data) {
+							console.log(data);
+							if (data.code == 1) {
+								layer.msg('验证码有误，请确认后重新输入', {
+									icon : 2
+								});
+								return false;
+							} else if (data.code == 0) {
+								layer.msg('验证码过期，请重新获取', {
+									icon : 2
+								});
+								return false;
+							} else if (data.code == 2) {
+								layer.msg('验证成功', {
+									icon : 1
+								});
+							}
+						}
+					});
+				} else {
+					layer.msg('验证码有误，请确认后重新输入', {
+						icon : 2
+					});
+					return false;
+				}
+			});
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<title>装机信息列表--后台管理模板</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="static/css/font_eolqem241z66flxr.css" media="all" />
+<link rel="stylesheet" th:href="@{/static/css/news.css}"
+	href="static/css/news.css" media="all" />
+</head>
+
+<body class="childrenBody">
+	<blockquote class="layui-elem-quote news_search">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">联系电话：</label>
+					<div class="layui-input-inline">
+						<input type="tel" name="uphone" id="uphone" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">客户姓名：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="uname" id="uname" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">区域：</label>
+					<div class="layui-input-inline">
+						<select name="area" id="area" lay-filter="aihao">
+							<option value="">--无限制</option>
+							<option value="西城区">&nbsp;西城区</option>
+							<option value="东城区">&nbsp;东城区</option>
+							<option value="丰台区">&nbsp;丰台区</option>
+							<option value="海淀区">&nbsp;海淀区</option>
+							<option value="朝阳区">&nbsp;朝阳区</option>
+							<option value="大兴区">&nbsp;大兴区</option>
+							<option value="房山区">&nbsp;房山区</option>
+							<option value="延庆县">&nbsp;延庆县</option>
+							<option value="石景山">&nbsp;石景山</option>
+							<option value="昌平区">&nbsp;昌平区</option>
+							<option value="通州区">&nbsp;通州山</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">装机状态：</label>
+					<div class="layui-input-inline">
+						<select name="status" id="status" lay-search="">
+							<option value="">--无限制</option>
+							<option value="0">新申请</option>
+							<option value="1">装机中</option>
+							<option value="2">装机成功</option>
+							<option value="3">装机失败</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<a class="layui-btn search_btn" id="search">查询</a> <a
+						class="layui-btn search_btn" id="allList">显示所有</a>
+				</div>
+			</div>
+		</form>
+	</blockquote>
+	<blockquote class="layui-elem-quote news_search">
+		<div class="layui-inline">
+			<a class="layui-btn install_btn" style="background-color: #5FB878">添加装机信息</a>
+		</div>
+		<div class="layui-inline">
+			<a class="layui-btn export_btn" style="background-color: #5FB878">装机信息导出</a>
+		</div>
+		<div class="layui-inline">
+			<div class="layui-form-mid layui-word-aux"></div>
+		</div>
+	</blockquote>
+	<div class="layui-form install_list">
+		<table class="layui-table">
+			<colgroup>
+				<col width="50">
+				<col>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col>
+			</colgroup>
+			<thead>
+				<tr>
+					<th><input type="checkbox" name="" lay-skin="primary"
+						lay-filter="allChoose" id="allChoose"></th>
+					<th style="text-align: left;">客户姓名</th>
+					<th>联系电话</th>
+					<th>区域</th>
+					<th>详细地址</th>
+					<th>套餐名称</th>
+					<th>运营商</th>
+					<th>来源</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody class="install_content">
+			</tbody>
+		</table>
+	</div>
+	<div id="demo7" style="width: 100%"></div>
+	<div id="page"></div>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"
+		src="static/layui/layui.js"></script>
+	<script type="text/javascript">
+		var startPage = 0; // 起始页
+		var pageSize = 10; // 每页显示多少条
+		var total = 0; // 总数
+		var currPage = 1; // 当前页面
+		var firstLoad = 0; // 页面首次加载分页
+		var $;
+		var form;
+		var laypage;
+		var layer;
+
+		function hell() {
+			layer.closeAll("iframe");
+			getProducts();
+			toPage();
+		}
+
+		// ajax 请求后台数据
+		function getProducts() {
+			$.ajax({
+				url : "/gaofeng/home/install/findInstallByPage",
+				type : "post",
+				dataType : "json",
+				async : false,
+				data : {
+					startPage : startPage,
+					pageSize : pageSize
+				},
+				success : function(data) {
+					// 渲染页面
+					total = data.total;
+					startPage = data.pageNum;
+					renderDate(data.list);
+				}
+			})
+
+		}
+
+		function search() {
+			var uname = $("#uname").val();
+			var uphone = $("#uphone").val();
+			var area = $("#area").val();
+			var status = $("#status").val();
+			$.ajax({
+				type : 'POST',
+				url : '/gaofeng/home/install/search',
+				dataType : 'json',
+				data : {
+					uname : uname,
+					uphone : uphone,
+					area : area,
+					status : status,
+					startPage : startPage,
+					pageSize : pageSize
+				},
+				async : false,
+				success : function(data) {
+					total = data.total;
+					startPage = data.pageNum;
+					renderDate(data.list);
+				}
+			});
+		}
+
+		function searchToPage() {
+			laypage.render({
+				elem : 'demo7',
+				count : total,
+				curr : startPage,
+				layout : [ 'count', 'prev', 'page', 'next', 'limit', 'skip' ],
+				jump : function(obj) {
+					console.log(obj);
+					console.log(total);
+					startPage = obj.curr;
+					pageSize = obj.limit;
+					if (firstLoad == 1) {
+						search();
+					}
+					firstLoad = 1;
+
+				}
+			});
+		}
+
+		function renderDate(ilist, curr) {
+			var dataHtml = '';
+			if (ilist.length != 0) {
+				for (var i = 0; i < ilist.length; i++) {
+					dataHtml += '<tr>'
+							+ '<td><input type="checkbox" name="checked" lay-skin="primary" lay-filter="choose"></td>'
+							+ '<td align="left">'
+							+ ilist[i].uname
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].phone
+							+ '</a></td>'
+							+ '<td>'
+							+ ilist[i].area
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].address
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].product.title
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].product.operator
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].orgName
+							+ '</td>'
+							+ '<td>'
+							+ ilist[i].statusName
+							+ '</td>'
+							+ '<td>'
+							+ '<a class="layui-btn layui-btn-mini install_edit" data-id = "' +
+                        ilist[i].id +
+                        '"><i class="iconfont icon-edit"></i> 编辑</a>';
+					if (ilist[i].status == 0) {
+						dataHtml += '<a class="layui-btn layui-btn-danger layui-btn-mini install_accept" data-id="' +
+                            				ilist[i].id +
+                            			'"><i class="iconfont icon-edit"></i> 受理安装</a>'
+								+ '</td>' + '</tr>';
+					}
+
+				}
+			} else {
+				dataHtml = '<tr><td colspan="9">暂无数据</td></tr>';
+			}
+			$(".install_content").html(dataHtml);
+			form.render();
+		}
+		
+
+        //分页
+        function toPage() {
+            laypage.render({
+                elem: 'demo7',
+                count: total,
+                curr: startPage,
+                layout: ['count', 'prev', 'page', 'next',
+                    'limit', 'skip'
+                ],
+                jump: function(obj) {
+                    startPage = obj.curr;
+                    pageSize = obj.limit;
+                    if (firstLoad == 1) {
+                        getProducts();
+                    }
+                    firstLoad = 1;
+
+                }
+            });
+        }
+        
+        
+        layui.config({
+            base: "js/"
+        }).use(
+            ['form', 'layer', 'jquery', 'laypage', 'upload'],
+            function() {
+                form = layui.form(),
+                layer = layui.layer,
+                laypage = layui.laypage,
+                upload = layui.upload,
+                $ = layui.jquery;
+                
+                //初始化数据
+                getProducts();
+                toPage();
+                
+                //条件查询
+                $("#search").click(function (){
+                	startPage = 1;
+                	search();
+                	searchToPage();
+                	
+                });
+                
+                $("#allList").click(function(){
+                	getProducts();
+                    toPage();
+                });
+                
+                // 添加按钮
+                $(".install_btn").click(function() {
+                    var index = layer.open({
+                        title: "添加装机信息",
+                        type: 2,
+                        scrollbar: true,
+                        area: ['100%', '100%'],
+                        content: "installAdd",
+                        success: function(layero, index) {
+                            layer.tips('点击此处返回产品列表', '.layui-layer-setwin .layui-layer-close', {
+                                tips: 3
+                            });
+                        }
+                    })
+                    // 改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+                    $(window).resize(function() {
+                        layer.full(index);
+                    })
+                    layer.full(index);
+                });
+
+                //导出
+                $(".export_btn").click(function() {
+                    window.open('/gaofeng/home/install/exportInstall');
+                });
+
+                //下载
+                $(".down_btn").click(
+                    function() {
+                        window.open('/gaofeng/static/doc/product.xlsx');
+                 });
+
+                // 全选
+                form.on('checkbox(allChoose)', function(data) {
+                    var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"])');
+                    child.each(function(index,
+                        item) {
+                        item.checked = data.elem.checked;
+                    });
+                    form.render('checkbox');
+                });
+
+                // 通过判断产品是否全部选中来确定全选按钮是否选中
+                form.on("checkbox(choose)", function(data) {
+                    var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"])');
+                    var childChecked = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"]):checked')
+                    data.elem.checked;
+                    if (childChecked.length == child.length) {
+                        $(data.elem).parents('table').find('thead input#allChoose').get(0).checked = true;
+                    } else {
+                        $(data.elem).parents('table').find('thead input#allChoose').get(0).checked = false;
+                    }
+                    form.render('checkbox');
+                })
+
+                // 编辑
+                $("body").on("click", ".install_edit",
+                    function() { 
+                        var _this = $(this);
+                        var index = layer.open({
+                            title: "修改装机信息",
+                            type: 2,
+                            content: "installEdit/" +
+                                _this.attr("data-id"),
+                            success: function(layero, index) {
+                                //layer.tips('点击此处返回产品列表','.layui-layer-setwin .layui-layer-close',{tips : 3});
+                            }
+                        });
+
+                        // 改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+                        $(window).resize(function() {
+                            layer.full(index);
+                        });
+                        layer.full(index);
+                 })
+
+                //文件上传
+                upload.render({
+                    elem: '#test3',
+                    url: '/gaofeng/home/product/importExcel',
+                    accept: 'file', //普通文件
+                    exts: 'xlsx|xls', //只允许上传压缩文件
+                    done: function(res) {}
+                });
+
+                //受理
+                $("body").on("click", ".install_accept", function() {
+                    var _this = $(this);
+                    $.ajax({
+                        type: 'GET',
+                        url: '/gaofeng/home/install/accept/' +
+                            _this
+                            .attr("data-id"),
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        async: true,
+                        success: function(result) {
+                            if (result.code == 0) {
+                                layer.msg('success:受理成功', {icon: 1,time: 1000});
+                                setTimeout(function() {
+                                	firstLoad = 0;
+                                    getProducts();
+                                    toPage();
+                                },800);
+                            } else {
+                                layer.msg('error:受理失败！' +result.message, {icon: 2,time: 1000});
+                            }
+                        },
+                        error: function(result,type) {
+                            layer.msg('error:受理失败！', {icon: 2,time: 1000});
+                        }
+                    });
+                })
+                
+                //完成
+                $("body").on("click", ".install_finish", function() {
+                    var _this = $(this);
+                    layer.confirm('确定删除此信息？', {icon: 3,title: '提示信息'},
+                        function(index) {
+                            $.ajax({
+                                type: 'GET',
+                                url: '/gaofeng/home/product/deleteProduct/' +
+                                    _this
+                                    .attr("data-id"),
+                                dataType: 'json',
+                                contentType: 'application/json',
+                                async: true,
+                                success: function(result) {
+                                    if (result.code == 0) {
+                                        layer.msg('success:删除成功', {icon: 1,time: 1000});
+                                        setTimeout(function() {
+                                        	firstLoad = 0;
+                                            getProducts();
+                                            toPage();
+                                        },800);
+                                    } else {
+                                        layer.msg('eles:删除失败！' +result.message, {icon: 2,time: 1000});
+                                    }
+                                },
+                                error: function(result,type) {
+                                    layer.msg('error:删除失败！', {icon: 2,time: 1000});
+                                }
+                            });
+                            layer.close(index);
+                        });
+                })
+            })
+	</script>
+
+</body>
+
+</html>

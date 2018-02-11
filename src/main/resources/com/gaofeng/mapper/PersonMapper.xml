@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 1.命名空间要和接口全名称一致 2.sql语句映射配置的Id要和接口中的方法一致 3.查询中如果类属性和数据库表中的字段名称不一致时，可以采用 
+	select user_name as userName 的形式 4.返回类型最好使用类全名，也可以采用别名的形式。 -->
+<mapper namespace="com.gaofeng.mapper.PersonMapper">
+	<select id="findPersonById" resultType="com.gaofeng.pojo.Person">
+		select * from person where id = #{id}
+	</select>
+</mapper>

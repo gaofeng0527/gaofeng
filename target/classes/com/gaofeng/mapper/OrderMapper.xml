@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaofeng.mapper.OrderMapper">
+	<sql id="columns">
+		id as id,
+		uid as userId,
+		uname as uname,
+		uphone as phone,
+		otype as otype,
+		status as status,
+		pay_status as payStatus,
+		order_time as orderTime,
+		order_price as orderPrice,
+		coupan_pay as coupanPay,
+		pay_type as payType,
+		finish_time as finishTime,
+		moduleId as moduleId
+	</sql>
+
+	<insert id="addOrder" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO orders (uid, uname, uphone,
+		otype, status, pay_status, order_time, order_price, coupan_pay, moduleId) VALUES
+		(#{userId},#{uname},#{phone},#{otype},0,0,now(),#{orderPrice},#{coupanPay},#{moduleId})
+	</insert>
+
+</mapper>

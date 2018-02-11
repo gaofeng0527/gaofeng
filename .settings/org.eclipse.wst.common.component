@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="gaofeng">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/test"/>
+        <dependent-module archiveName="weixin-java-mp-2.9.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/weixin-java-mp/weixin-java-mp">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="weixin-java-common-2.9.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/weixin-java-common/weixin-java-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="gaofeng"/>
+        <property name="java-output-path" value="/gaofeng/target/classes"/>
+    </wb-module>
+</project-modules>

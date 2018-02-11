@@ -1,0 +1,9 @@
+com\gaofeng\controller\WxUserController.class
+com\gaofeng\pojo\Company.class
+com\gaofeng\pojo\Product.class
+com\gaofeng\service\WxUserService.class
+com\gaofeng\pojo\Account.class
+com\gaofeng\pojo\Result.class
+com\gaofeng\pojo\WxUser.class
+com\gaofeng\handler\LogHandler.class
+com\gaofeng\handler\AbstractHandler.class

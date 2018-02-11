@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+<title>个人中心</title>
+</head>
+<body>
+	<div class="layui-row">
+		<div class="layui-col-xs12 layui-col-md8">
+			<div class="grid-demo grid-demo-bg1">
+				<div class="user-photo">
+					<a class="img" title="我的头像"><img
+						src="/gaofeng/static/images/face.jpg"></a>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-xs6 layui-col-md4">
+			<div class="grid-demo">
+					<h2>冰人</h2>
+			</div>
+			<div class="grid-demo">18510740386</div>
+		</div>
+	</div>
+	<div class="layui-row">
+		<br>
+	</div>
+	<div class="layui-row">
+		<div class="layui-col-xs12 layui-col-md8">
+			<div class="grid-demo grid-demo-bg1">
+				<div class="user-photo">
+					<a th:href="@{renew}" href="http://www.layui.com" class="layui-btn">续费管理</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row">
+		<br>
+	</div>
+	<!-- <div class="layui-row">
+		<div class="layui-col-xs12 layui-col-md8">
+			<div class="grid-demo grid-demo-bg1">
+				<div class="user-photo">
+					<a href="http://www.layui.com" class="layui-btn">报装记录</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row">
+		<br>
+	</div>
+	<div class="layui-row">
+		<div class="layui-col-xs12 layui-col-md8">
+			<div class="grid-demo grid-demo-bg1">
+				<div class="user-photo">
+					<a href="http://www.layui.com" class="layui-btn">添加宽带</a>
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<div class="layui-row">
+		<br>
+	</div>
+	<div class="layui-row">
+		<div class="layui-col-xs12 layui-col-md8">
+			<div class="grid-demo grid-demo-bg1">
+				<div class="user-photo">
+					<a th:href="@{editUser}" href="http://www.layui.com" class="layui-btn">个人信息</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

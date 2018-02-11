@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaofeng.mapper.AccountMapper">
+	<sql id="columns">
+		id as id,
+		uid as uid,
+		account_name as accountName,
+		account_code as accountCode,
+		phone as phone,
+		area as area,
+		city as city,
+		province as province,
+		address as address,
+		begin_time as beginTime,
+		end_time as endTime,
+		product_id as productId,
+		install_id as installId,
+		status as status,
+		company_id as companyId,
+		description as description
+	</sql>
+
+	<insert id="addAccount">
+		INSERT INTO accounts (uid,account_name,
+		account_code,phone, area, city, province,
+		address, status, begin_time,
+		end_time,product_id,install_id,company_id, description)
+		VALUES (#{uid},
+		#{accountName},#{accountCode},#{phone},#{area},#{city},#{province},#{address},
+		#{status},#{beginTime},#{endTime},#{productId},#{installId},#{companyId},#{description})
+	</insert>
+
+	<select id="findAccounts" resultType="com.gaofeng.pojo.Account">
+		select
+		<include refid="columns"></include>
+		from accounts
+	</select>
+	
+	<select id="findByAccount" resultType="com.gaofeng.pojo.Account">
+		select
+		<include refid="columns"></include>
+		from accounts where 1 = 1
+		<if test="null != accountName">
+			and account_name = #{accountName}
+		</if>
+		<if test="null != phone">
+			and phone = #{phone}
+		</if>
+		<if test="null != area">
+			and area = #{area}
+		</if>
+		<if test="status >= 0">
+			and status = #{status}
+		</if>
+	</select>
+
+	<resultMap type="com.gaofeng.pojo.Account" id="accountMap">
+		<id column="a_id" property="id" />
+		<result column="a_name" property="accountName" />
+		<result column="a_code" property="accountCode" />
+		<result column="a_phone" property="phone" />
+		<result column="a_address" property="address" />
+		<result column="begin_time" property="beginTime" />
+		<result column="end_time" property="endTime" />
+		<result column="a_status" property="status" />
+		<result column="a_description" property="description" />
+		<association property="user" javaType="com.gaofeng.pojo.WxUser">
+			<id column="w_id" property="id" />
+			<result column="nickname" property="nickName" />
+			<result column="openid" property="openId" />
+			<result column="w_uname" property="uname" />
+			<result column="w_uphone" property="uphone" />
+			<result column="w_address" property="address" />
+			<result column="w_area" property="area" />
+			<result column="w_city" property="city" />
+		</association>
+		<association property="product" javaType="com.gaofeng.pojo.Product">
+			<id column="p_id" property="id" />
+			<result column="p_title" property="title" />
+			<result column="p_price" property="price" />
+			<result column="p_city" property="city" />
+			<result column="p_area" property="area" />
+			<result column="p_operator" property="operator" />
+			<result column="p_type" property="type" />
+			<result column="p_discounts" property="discounts" />
+		</association>
+	</resultMap>
+
+	<select id="findAccountByUserId" resultMap="accountMap">
+		SELECT a.id AS a_id,
+		a.account_name AS a_name, a.account_code AS a_code, a.phone AS
+		a_phone, a.address AS a_address, a.begin_time AS begin_time,
+		a.end_time AS end_time, a.status AS a_status, a.description AS
+		a_description, w.id AS w_id, w.nickname AS nickname, w.openid AS
+		openid, w.uname AS w_uname, w.uphone AS w_uphone, w.address AS
+		w_address, w.area AS w_area, w.city AS w_city, p.id AS p_id, p.pname
+		AS p_title, p.price AS p_price, p.city AS p_city, p.area AS p_area,
+		p.operator AS p_operator, p.ptype AS p_type, p.discounts AS
+		p_discounts
+		FROM accounts AS a
+		JOIN wxuser AS w ON a.uid = w.id
+		JOIN
+		product AS p ON a.product_id = p.id
+	</select>
+
+	<select id="findAccountById" resultMap="accountMap">
+		SELECT a.id AS a_id,
+		a.account_name AS a_name, a.account_code AS a_code, a.phone AS
+		a_phone, a.address AS a_address, a.begin_time AS begin_time,
+		a.end_time AS end_time, a.status AS a_status, a.description AS
+		a_description, w.id AS w_id, w.nickname AS nickname, w.openid AS
+		openid, w.uname AS w_uname, w.uphone AS w_uphone, w.address AS
+		w_address, w.area AS w_area, w.city AS w_city, p.id AS p_id, p.pname
+		AS p_title, p.price AS p_price, p.city AS p_city, p.area AS p_area,
+		p.operator AS p_operator, p.ptype AS p_type, p.discounts AS
+		p_discounts
+		FROM accounts AS a
+		JOIN wxuser AS w ON a.uid = w.id
+		JOIN
+		product AS p ON a.product_id = p.id
+		where a.id = #{accountId}
+	</select>
+	
+	<select id="findOneByAccountId" resultType="com.gaofeng.pojo.Account">
+		select
+		<include refid="columns"></include>
+		from accounts where id = #{id}
+	</select>
+
+
+
+</mapper>

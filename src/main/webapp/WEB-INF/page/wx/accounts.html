@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+<title>宽带帐号</title>
+</head>
+<body>
+	<div class="layui-row">
+		<table class="layui-table">
+			<colgroup>
+				<col>
+			</colgroup>
+			<tbody>
+				<tr th:each="account:${accounts}">
+					<td>
+						<div class="layui-col-xs6 layui-col-md4">
+							<div class="grid-demo">
+								<span th:text="${account.accountCode}">201801091854</span>
+							</div>
+							<div class="grid-demo">
+								<span th:text="${account.product.title}">201801091854</span>
+							</div>
+							<div class="grid-demo">
+								<span th:text="|${#dates.format(account.beginTime,'yyyy年MM月dd日')} 开通|">201801091854</span>
+							</div>
+							<div class="grid-demo">
+								<span th:text="|${#dates.format(account.endTime,'yyyy年MM月dd日')} 到期|">201801091854</span>
+							</div>
+							<div class="grid-demo">
+								<span th:text="|${account.address}|">201801091854</span>
+							</div>
+							<div class="grid-demo">
+								<a th:href="|@{accountModel}?id=${account.id}|" href="http://www.layui.com" class="layui-btn">续费申请</a>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+
+	</div>
+</body>
+</html>

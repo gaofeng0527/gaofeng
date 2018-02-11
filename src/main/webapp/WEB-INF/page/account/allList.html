@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>宽带帐号列表--后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" href="static/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" th:href="@{/static/css/font_eolqem241z66flxr.css}" href="static/css/font_eolqem241z66flxr.css" media="all" />
+    <link rel="stylesheet" th:href="@{/static/css/news.css}" href="static/css/news.css" media="all" />
+</head>
+
+<body class="childrenBody">
+    <blockquote class="layui-elem-quote news_search">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">联系电话：</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" name="uphone" id="uphone" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">客户姓名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="uname" id="uname" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">区域：</label>
+                    <div class="layui-input-inline">
+                        <select name="area" id="area" lay-filter="aihao">
+							<option value="">--无限制</option>
+							<option value="西城区">&nbsp;西城区</option>
+							<option value="东城区">&nbsp;东城区</option>
+							<option value="丰台区">&nbsp;丰台区</option>
+							<option value="海淀区">&nbsp;海淀区</option>
+							<option value="朝阳区">&nbsp;朝阳区</option>
+							<option value="大兴区">&nbsp;大兴区</option>
+							<option value="房山区">&nbsp;房山区</option>
+							<option value="延庆县">&nbsp;延庆县</option>
+							<option value="石景山">&nbsp;石景山</option>
+							<option value="昌平区">&nbsp;昌平区</option>
+							<option value="通州区">&nbsp;通州山</option>
+						</select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">装机状态：</label>
+                    <div class="layui-input-inline">
+                        <select name="status" id="status" lay-search="">
+							<option value="">--无限制</option>
+							<option value="0">正常</option>
+							<option value="1">已过期</option>
+						</select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <a class="layui-btn search_btn" id="search">查询</a> <a class="layui-btn search_btn" id="allList">显示所有</a>
+                </div>
+            </div>
+        </form>
+    </blockquote>
+    <blockquote class="layui-elem-quote news_search">
+
+        <div class="layui-inline">
+            <a class="layui-btn export_btn" style="background-color: #5FB878">导出</a>
+        </div>
+        <!-- <div class="layui-inline">
+			<a class="layui-btn linksAdd_btn" style="background-color: #5FB878">添加宽带帐号</a>
+		</div>
+		<div class="layui-inline">
+			<a class="layui-btn down_btn" style="background-color: #5FB878">下载模版</a>
+		</div>
+		<button type="button" class="layui-btn" id="test3">
+			<i class="layui-icon"></i>帐号导入
+		</button>
+		<div class="layui-inline">
+			<a class="layui-btn layui-btn-danger batchDel">批量删除</a>
+		</div>
+		<div class="layui-inline">
+			<div class="layui-form-mid layui-word-aux"></div>
+		</div> -->
+    </blockquote>
+    <div class="layui-form links_list">
+        <table class="layui-table">
+            <colgroup>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></th>
+                    <th style="text-align: left;">宽带帐号</th>
+                    <th>用户姓名</th>
+                    <th>联系方式</th>
+                    <th>详细地址</th>
+                    <th>所属区域</th>
+                    <th>到期时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="account_content">
+            </tbody>
+        </table>
+    </div>
+    <div id="demo7" style="width: 100%"></div>
+    <div id="page"></div>
+    <script type="text/javascript" th:src="@{/static/layui/layui.js}" src="static/layui/layui.js"></script>
+
+    <script type="text/javascript">
+        var startPage = 0; // 起始页
+        var pageSize = 10; // 每页显示多少条
+        var total = 0; // 总数
+        var currPage = 1; // 当前页面
+        var firstLoad = 0; // 页面首次加载分页
+        var $;
+        var form;
+        var laypage;
+
+        function hell() {
+            layer.closeAll("iframe");
+            getAccounts();
+            toPage();
+        }
+
+        // ajax 请求后台数据
+        function getAccounts() {
+            $.ajax({
+                url: "/gaofeng/home/account/findAccountByPage",
+                type: "post",
+                dataType: "json",
+                async: false,
+                data: {
+                    startPage: startPage,
+                    pageSize: pageSize
+                },
+                success: function(data) {
+                    // 渲染页面
+                    total = data.total;
+                    startPage = data.pageNum;
+                    renderDate(data.list);
+                }
+            })
+        }
+
+        
+        
+        function search() {
+			var uname = $("#uname").val();
+			var uphone = $("#uphone").val();
+			var area = $("#area").val();
+			var status = $("#status").val();
+			$.ajax({
+				type : 'POST',
+				url : '/gaofeng/home/account/search',
+				dataType : 'json',
+				data : {
+					uname : uname,
+					uphone : uphone,
+					area : area,
+					status : status,
+					startPage : startPage,
+					pageSize : pageSize
+				},
+				async : false,
+				success : function(data) {
+					total = data.total;
+					startPage = data.pageNum;
+					renderDate(data.list);
+				}
+			});
+		}
+
+		function searchToPage() {
+			laypage.render({
+				elem : 'demo7',
+				count : total,
+				curr : startPage,
+				layout : [ 'count', 'prev', 'page', 'next', 'limit', 'skip' ],
+				jump : function(obj) {
+					console.log(obj);
+					console.log(total);
+					startPage = obj.curr;
+					pageSize = obj.limit;
+					if (firstLoad == 1) {
+						search();
+					}
+					firstLoad = 1;
+
+				}
+			});
+		}
+        
+        
+        function renderDate(alist, curr) {
+            var dataHtml = '';
+            if (alist.length != 0) {
+                for (var i = 0; i < alist.length; i++) {
+                    dataHtml += '<tr>' +
+                        '<td><input type="checkbox" name="checked" lay-skin="primary" lay-filter="choose"></td>' +
+                        '<td align="left">' +
+                        alist[i].accountCode +
+                        '</td>' +
+                        '<td>' +
+                        alist[i].accountName +
+                        '</a></td>' +
+                        '<td>' +
+                        alist[i].phone +
+                        '</td>' +
+                        '<td>' +
+                        alist[i].address +
+                        '</td>' +
+                        '<td>' +
+                        alist[i].area +
+                        '</td>' +
+                        '<td>' +
+                        alist[i].endTime +
+                        '</td>' +
+                        '<td>' +
+                        alist[i].statusName +
+                        '</td>' +
+                        '<td>' +
+                        '<a class="layui-btn layui-btn-mini account_details" data-id = "' +
+                        alist[i].id +
+                        '">详情</a>' +
+                        '</td>' + '</tr>';
+                }
+            } else {
+                dataHtml = '<tr><td colspan="8">暂无数据</td></tr>';
+            }
+            $(".account_content").html(dataHtml);
+            form.render();
+
+        }
+
+        function toPage() {
+            laypage.render({
+                elem: 'demo7',
+                count: total,
+                curr: startPage,
+                layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'],
+                jump: function(obj) {
+                    console.log(obj);
+                    console.log(total);
+                    startPage = obj.curr;
+                    pageSize = obj.limit;
+                    if (firstLoad == 1) {
+                        getAccounts();
+                    }
+                    firstLoad = 1;
+
+                }
+            });
+        }
+
+        layui.config({
+            base: "js/"
+        }).use(['form', 'layer', 'jquery', 'laypage', 'upload'],
+            function() {
+                form = layui.form();
+                layer = layui.layer;
+                laypage = layui.laypage;
+                upload = layui.upload;
+                $ = layui.jquery;
+
+                getAccounts();
+                toPage();
+                
+              	//条件查询
+                $("#search").click(function (){
+                	startPage = 1;
+                	search();
+                	searchToPage();
+                	
+                });
+                
+              	//显示所有
+                $("#allList").click(function(){
+                	getAccounts();
+                    toPage();
+                });
+                
+                //详情
+                // 编辑
+                $("body").on("click", ".account_details",
+                    function() { 
+                        var _this = $(this);
+                        var index = layer.open({
+                            title: "宽带详情",
+                            type: 2,
+                            content: "details/" +
+                                _this.attr("data-id"),
+                            success: function(layero, index) {
+                                //layer.tips('点击此处返回产品列表','.layui-layer-setwin .layui-layer-close',{tips : 3});
+                            }
+                        });
+
+                        // 改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+                        $(window).resize(function() {
+                            layer.full(index);
+                        });
+                        layer.full(index);
+                 })
+                //
+                $(".accountAdd_btn").click(
+                    function() {
+                        var index = layer.open({
+                            title: "添加产品",
+                            type: 2,
+                            scrollbar: true,
+                            area: ['100%',
+                                '100%'
+                            ],
+                            content: "productAdd",
+                            success: function(layero, index) {
+                                layer.tips(
+                                    '点击此处返回产品列表',
+                                    '.layui-layer-setwin .layui-layer-close', {
+                                        tips: 3
+                                    });
+                            }
+                        })
+                        // 改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+                        $(window).resize(function() {
+                            layer.full(index);
+                        })
+                        layer.full(index);
+                });
+
+                // 全选
+                form.on('checkbox(allChoose)', function(data) {
+                    var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"])');
+                    child.each(function(index, item) {
+                        item.checked = data.elem.checked;
+                    });
+                    form.render('checkbox');
+                });
+
+                // 通过判断产品是否全部选中来确定全选按钮是否选中
+                form.on("checkbox(choose)", function(data) {
+                    var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"])');
+                    var childChecked = $(data.elem).parents('table').find(
+                        'tbody input[type="checkbox"]:not([name="show"]):checked')
+                    data.elem.checked;
+                    if (childChecked.length == child.length) {
+                        $(data.elem)
+                            .parents('table')
+                            .find(
+                                'thead input#allChoose')
+                            .get(0).checked = true;
+                    } else {
+                        $(data.elem)
+                            .parents('table')
+                            .find(
+                                'thead input#allChoose')
+                            .get(0).checked = false;
+                    }
+                    form.render('checkbox');
+                })
+
+            })
+    </script>
+</body>
+
+</html>
