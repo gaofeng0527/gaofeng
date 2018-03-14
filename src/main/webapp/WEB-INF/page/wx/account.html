@@ -67,16 +67,20 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">产品类型</label>
 			<div class="layui-input-block">
-				<input type="text" class="layui-input" name="type"
-					th:value="${product.ptypeName}" lay-verify="required">
+				<select name="type" lay-filter="type">
+					<option value="1" th:selected="${product.type==1}">年付</option>
+					<option value="2" th:selected="${product.type==2}">季付</option>
+					<option value="3" th:selected="${product.type==3}">月付</option>
+				</select>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">套餐名称</label>
 			<div class="layui-input-block">
-				<input type="text" name="title" th:value="${product.title}"
-					class="layui-input" lay-verify="required" placeholder="请输入产品名称">
-				<input type="hidden" name="productid" th:value="${product.id}">
+				<select name="title" lay-filter="title" id="title">
+					<option value="0">--请选择</option>
+				</select>
+				<input type="hidden" name="productId" th:value="${product.id}">
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -106,6 +110,78 @@
 		var $form;
 		var form;
 		var $;
+		var layer;
+		
+		//加载套餐下拉列表
+		function loadProduct() {
+			var type = $form.find('select[name=type]').val();
+			var area = $form.find('select[name=area]').val();
+			var operator = $form.find('select[name=operator]').val();
+			console.log(type);
+			console.log(area);
+			$.ajax({
+				url : "/gaofeng/open/install/loadProduct",
+				type : "post",
+				dataType : "json",
+				async : false,
+				data : {
+					type : type,
+					area : area,
+					operator : operator
+				},
+				success : function(data) {
+					createSelect(data)
+				}
+			})
+		}
+		
+		//创建下拉列表的option
+		function createSelect(data) {
+			var htmls = '';
+			if (data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					htmls += '<option value="'+data[i].id+'">' + data[i].title
+							+ '</option>'
+				}
+				$form.find('select[name=title]').empty();
+				$form.find('select[name=title]').append(htmls);
+				var productId = $("#productId").val();
+				if (!productId) {
+					loadDiscounts(data[0].id);
+				}
+				form.render('select');
+			} else {
+				$form.find('select[name=title]').empty();
+				htmls += '<option value="-1">--请选择</option>';
+				$form.find('select[name=title]').append(htmls);
+				$("#price").val("");
+				$("#discounts").val("");
+				form.render('select');
+			}
+		}
+
+		function loadDiscounts(productId) {
+			$.ajax({
+				url : "/gaofeng/home/product/findProduct",
+				type : "get",
+				dataType : "json",
+				async : false,
+				data : {
+					productId : productId
+				},
+				success : function(data) {
+					console.log(data);
+					$("#productId").val(data.data.id);
+					$("#price").val(data.data.price);
+					if (data.data.discounts) {
+						$("#discounts").val(data.data.discounts);
+					} else {
+						$("#discounts").val('暂无优惠');
+					}
+
+				}
+			})
+		}
 
 		layui.config({
 			base : "js/"
@@ -115,6 +191,19 @@
 			$ = layui.jquery;
 			$form = $('form');
 
+			//初始套餐信息
+			loadProduct();
+			
+			form.on('select(type)', function(data) {
+				loadProduct();
+			});
+
+			form.on('select(title)', function(data) {
+				console.log(data);
+				var productId = data.value;
+				loadDiscounts(productId);
+
+			});
 		})
 	</script>
 </body>
