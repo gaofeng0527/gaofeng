@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>装机信息修改</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+</head>
+<body class="childrenBody">
+	<form class="layui-form" style="width: 80%;">
+		<div class="layui-form-item">
+			<label class="layui-form-label">客户姓名</label>
+			<div class="layui-input-block">
+				<input type="text" name="uname" th:value="${install.uname}" class="layui-input" lay-verify="required" placeholder="请输入客户姓名">
+				<input type="hidden" name="id" th:value="${install.id}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系电话</label>
+			<div class="layui-input-block">
+				<input type="text" name="phone" th:value="${install.phone}" class="layui-input" lay-verify="required|phone" placeholder="请输入联系电话">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">所属区域</label>
+			<div class="layui-input-block">
+				<input type="text" name="area" th:value="${install.area}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">装机地址</label>
+			<div class="layui-input-block">
+				<input type="text" name="address" th:value="${install.address}" class="layui-input" lay-verify="required" placeholder="请输入装机地址">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">申请时间</label>
+			<div class="layui-input-block">
+				<input type="text" name="createTime" th:value="${#dates.format(install.createTime,'yyyy年MM月dd日 hh:mm:ss')}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">选择套餐</label>
+			<div class="layui-input-block">
+				<input type="text" name="product.title" th:value="${product.title}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">套餐价格</label>
+			<div class="layui-input-block">
+				<input type="text" name="product.price" th:value="${product.price}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">运营商</label>
+			<div class="layui-input-block">
+				<input type="text" name="product.operator" th:value="${product.operator}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">产品类型</label>
+			<div class="layui-input-block">
+				<input type="text" name="product.type" th:value="${product.ptypeName}" class="layui-input" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">状态</label>
+			<div class="layui-input-block">
+				<select name="status" id="status" lay-filter="status">
+					<option value="0" th:selected="${install.status==0}">新申请</option>
+					<option value="1" th:selected="${install.status==1}">装机中</option>
+					<option value="2" th:selected="${install.status==2}">装机成功</option>
+					<option value="3" th:selected="${install.status==3}">装机失败</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item" style="display: none;" id="accountDiv">
+			<label class="layui-form-label">宽带帐号</label>
+			<div class="layui-input-block">
+				<input type="text" name="account" id="account" class="layui-input" placeholder="请输入宽带帐号">
+			</div>
+		</div>
+		<div class="layui-inline" style="display: none;" id="vdataDiv">
+	      <label class="layui-form-label">开通日期</label>
+	      <div class="layui-input-inline">
+	        <input type="text" name="vdate" id="vdate" class="layui-input">
+	      </div>
+	    </div>
+		<div class="layui-form-item">
+		<br>
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit="" lay-filter="installEdit">保存修改</button>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"
+		src="static/layui/layui.js"></script>
+	<script type="text/javascript">
+	var $form;
+	var form;
+	var $;
+	var laydate;
+	layui.config({
+		base : "js/"
+	}).use([ 'form', 'layer', 'jquery','laydate' ], function() {
+		form = layui.form();
+		layer = layui.layer;
+		$ = layui.jquery;
+		$form = $('form');
+		laydate = layui.laydate;
+		
+		//日期
+		laydate.render({
+		  elem: '#vdate'
+		});
+		
+		//状态更改事件
+		form.on('select(status)', function(data) {
+				console.log(data);
+				console.log(data.value);
+				var status = data.value;
+				if(status == 2){
+					$("#accountDiv").show();
+					$("#vdataDiv").show();
+				}else{
+					$("#accountDiv").hide();
+					$("#vdataDiv").hide();
+				}
+		});
+		
+		form.on("submit(installEdit)", function(data) {
+			var status = data.field.status;
+			if(status == 2){
+				var account = $("#account").val();
+				if(account.length == 0){
+					layer.msg('error:装机成功需要填写宽带帐号！', {icon: 2,time: 1000});
+					return false;
+				}
+				var date = $("#vdate").val();
+				if(date.length == 0){
+					layer.msg('error:装机成功需要填写宽带开通日期！', {icon: 2,time: 1000});
+					return false;
+				}
+			}
+			$.ajax({
+				type : 'POST',
+				url : '/gaofeng/home/install/installEdit',
+				dataType : 'json',
+				data : JSON.stringify(data.field),
+				contentType : 'application/json',
+				async : true,
+				success : function(result) {
+					if (result.code == 0) {
+						layer.msg('success:保存成功', {
+							icon : 1,
+							time : 1000
+						});
+						setTimeout(function() {
+
+							layer.closeAll("iframe");
+							parent.hell();
+							//刷新父页面
+
+						}, 800);
+					} else {
+						layer.msg('error:' + result.message, {
+							icon : 2,
+							time : 3000
+						});
+					}
+				},
+				error : function(result, type) {
+					layer.msg('error:保存失败！', {
+						icon : 2,
+						time : 1000
+					});
+				}
+			});
+			return false;
+		})
+
+	})
+	</script>
+</body>
+</html>

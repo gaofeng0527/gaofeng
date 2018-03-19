@@ -115,8 +115,8 @@
 		//加载套餐下拉列表
 		function loadProduct() {
 			var type = $form.find('select[name=type]').val();
-			var area = $form.find('select[name=area]').val();
-			var operator = $form.find('select[name=operator]').val();
+			var area = $form.find('input[name=area]').val();
+			var operator = $form.find('input[name=operator]').val();
 			console.log(type);
 			console.log(area);
 			$.ajax({

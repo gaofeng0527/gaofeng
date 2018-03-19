@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaofeng.mapper.WxUserMapper">
+	<sql id="columns">
+		id as id,
+		nickname as nickName,
+		headimage as headImage,
+		openid as openId,
+		uname as uname,
+		upwd as upwd,
+		uphone as uphone,
+		ctype
+		as
+		ctype,
+		cardid as cardId,
+		address as address,
+		area as area,
+		city as
+		city,
+		province as province,
+		sex as sex,
+		reg_time as regTime,
+		status as
+		status,
+		company_id as companyId
+	</sql>
+
+	<select id="findAll" resultType="com.gaofeng.pojo.WxUser">
+		select
+		<include refid="columns" />
+		from wxuser
+	</select>
+
+	<select id="findByWxUser" resultType="com.gaofeng.pojo.WxUser">
+		select
+		<include refid="columns" />
+		from wxuser where 1=1
+		<if test="uname != null">
+			and uname = #{uname}
+		</if>
+		<if test="uphone != null">
+			and uphone = #{uphone}
+		</if>
+		<if test="area != null">
+			and area =#{area}
+		</if>
+		<if test="status >= 0">
+			status = #{status}
+		</if>
+	</select>
+
+	<insert id="addWxUser">
+		INSERT INTO wxuser (nickname, headimage, openid,
+		uname, upwd, uphone, ctype, cardid, address, area, city, province,
+		sex, reg_time, status, company_id) VALUES
+		(#{nickName},#{headImage},#{openId},#{uname},#{upwd},#{uphone},
+		'身份证',#{cardId},#{address}, #{area}, #{city}, #{province}, #{sex},
+		now(), 0, 1) ON DUPLICATE KEY UPDATE headimage=#{headImage}
+	</insert>
+
+	<select id="findOneByuId" resultType="com.gaofeng.pojo.WxUser">
+		select
+		<include refid="columns" />
+		from wxuser where id = #{wxUserId}
+	</select>
+
+	<!-- <select id="" resultType="com.gaofeng.pojo.WxUser"> select <include 
+		refid="columns" /> from wxuser where openid = #{openid} </select> -->
+
+	<update id="updateWxUserById">
+		update wxuser set address =
+		#{address},cardId=#{cardId},uname=#{uname},uphone=#{uphone},area =
+		#{area}
+		,status = #{status}
+		where id = #{id}
+	</update>
+
+	<resultMap type="com.gaofeng.pojo.WxUser" id="byOpenIdMap">
+		<id column="w_id" property="id" />
+		<result column="nickname" property="nickName" />
+		<result column="openid" property="openId" />
+		<result column="uname" property="uname" />
+		<result column="uphone" property="uphone" />
+		<result column="cardid" property="cardId" />
+		<result column="w_address" property="address" />
+		<result column="w_area" property="area" />
+		<result column="w_city" property="city" />
+		<collection property="accounts" ofType="com.gaofeng.pojo.Account">
+			<id column="a_id" property="id" />
+			<result column="uid" property="uid" />
+			<result column="a_name" property="accountName" />
+			<result column="a_code" property="accountCode" />
+			<result column="a_phone" property="phone" />
+			<result column="a_area" property="area" />
+			<result column="a_city" property="city" />
+			<result column="a_address" property="address" />
+			<result column="a_status" property="status" />
+			<result column="a_begin_time" property="beginTime" />
+			<result column="a_end_time" property="endTime" />
+			<result column="product_id" property="productId" />
+			<result column="a_description" property="description" />
+			<association property="product" javaType="com.gaofeng.pojo.Product">
+				<id column="p_id" property="id" />
+				<result column="p_title" property="title" />
+				<result column="p_price" property="price" />
+				<result column="p_city" property="city" />
+				<result column="operator" property="operator" />
+				<result column="p_area" property="area" />
+				<result column="p_type" property="type" />
+				<result column="discounts" property="discounts" />
+				<result column="p_status" property="status" />
+			</association>
+		</collection>
+	</resultMap>
+	<select id="findWxUserByOpenId" resultMap="byOpenIdMap">
+		SELECT w.id AS
+		w_id,w.nickname AS nickname,w.openid AS openid,w.uname AS
+		uname,w.uphone AS uphone,
+		w.cardid AS cardid,w.address AS
+		w_address,w.area AS w_area,w.city AS
+		w_city,a.id AS a_id,a.uid AS
+		uid,a.account_name AS
+		a_name,a.account_code AS a_code,
+		a.phone AS
+		a_phone,a.area AS a_area,a.city AS a_city,a.address AS
+		a_address,a.status AS a_status,a.begin_time AS a_begin_time,a.end_time
+		AS a_end_time,
+		a.product_id AS product_id,a.description AS
+		a_description,p.id AS p_id,p.pname AS
+		p_title,p.price AS p_price,p.city
+		AS p_city,p.area AS
+		p_area,p.operator AS operator,
+		p.ptype AS
+		p_type,p.discounts AS discounts,p.status AS p_status
+		FROM wxuser AS w
+		LEFT JOIN accounts AS a ON w.id = a.uid LEFT JOIN product
+		AS p ON
+		a.product_id = p.id
+		WHERE w.openId = #{openId}
+	</select>
+
+
+
+
+
+
+</mapper>

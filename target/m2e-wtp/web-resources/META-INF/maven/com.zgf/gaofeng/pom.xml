@@ -24,7 +24,7 @@
 		<jackson.version>2.9.3</jackson.version>
 	</properties>
 	<dependencies>
-	
+
 		<!-- spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+<title>宽带报装&nbsp;-&nbsp;信息确认</title>
+</head>
+<body>
+	<form action="addInstall" class="layui-form" style="width: 90%;"
+		method="post">
+		<div class="layui-form-item">
+			<label class="layui-form-label">客户姓名</label>
+			<div class="layui-input-block">
+				<input type="text" name="uname" th:value="${wxUser.uname}"
+					class="layui-input" lay-verify="required" placeholder="请输入姓名">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系电话</label>
+			<div class="layui-input-block">
+				<input type="text" name="uphone" th:value="${wxUser.uphone}"
+					class="layui-input" lay-verify="required|phone" readonly="readonly"
+					placeholder="请输入联系电话">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">身份证号</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" th:value="${wxUser.cardId}"
+					name="cardId" lay-verify="required|identity" placeholder="请输入身份证号">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">所在城市</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" th:value="${product.city}"
+					name="city" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">所在区域</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" th:value="${product.area}"
+					name="area" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">详细地址</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="address"
+					th:value="${wxUser.address}" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">运营商</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="operator"
+					th:value="${product.operator}" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">产品类型</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="type"
+					th:value="${product.ptypeName}" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">套餐名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="title" th:value="${product.title}"
+					class="layui-input" lay-verify="required" placeholder="请输入产品名称">
+				<input type="hidden" name="productid" th:value="${product.id}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">套餐价格</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="type"
+					th:value="${product.price}" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">优惠政策</label>
+			<div class="layui-input-block">
+				<textarea placeholder="请输入产品描述" readonly="readonly"
+					class="layui-textarea" name="discounts"
+					th:text="${product.discounts}" id="discounts"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit="" lay-filter="verify">确认信息</button>
+				<a th:href="@{backTwo}" class="layui-btn">上 一 步</a>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"
+		src="static/layui/layui.js"></script>
+	<script type="text/javascript">
+		var $form;
+		var form;
+		var $;
+
+		layui.config({
+			base : "js/"
+		}).use([ 'form', 'layer', 'jquery' ], function() {
+			form = layui.form();
+			layer = layui.layer;
+			$ = layui.jquery;
+			$form = $('form');
+
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"
+	href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet"
+	th:href="@{/static/css/font_eolqem241z66flxr.css}"
+	href="/static/css/font_eolqem241z66flxr.css" media="all" />
+<title>宽带报装</title>
+</head>
+<body>
+	<form action="next" class="layui-form" style="width: 90%;"
+		method="post">
+		<div class="layui-form-item">
+			<label class="layui-form-label">选择城市</label>
+			<div class="layui-input-block">
+				<select name="city" lay-filter="city">
+					<option value="北京市">北京市</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">区域</label>
+			<div class="layui-input-block">
+				<select name="area" lay-filter="area">
+					<option value="西城区" th:selected="${product.area=='西城区'}">&nbsp;西城区</option>
+					<option value="东城区" th:selected="${product.area=='东城区'}">&nbsp;东城区</option>
+					<option value="丰台区" th:selected="${product.area=='丰台区'}">&nbsp;丰台区</option>
+					<option value="海淀区" th:selected="${product.area=='海淀区'}">&nbsp;海淀区</option>
+					<option value="朝阳区" th:selected="${product.area=='朝阳区'}">&nbsp;朝阳区</option>
+					<option value="大兴区" th:selected="${product.area=='大兴区'}">&nbsp;大兴区</option>
+					<option value="房山区" th:selected="${product.area=='房山区'}">&nbsp;房山区</option>
+					<option value="延庆县" th:selected="${product.area=='延庆县'}">&nbsp;延庆县</option>
+					<option value="石景山" th:selected="${product.area=='石景山'}">&nbsp;石景山</option>
+					<option value="昌平区" th:selected="${product.area=='昌平区'}">&nbsp;昌平区</option>
+					<option value="通州山" th:selected="${product.area=='通州山'}">&nbsp;通州山</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">运营商</label>
+			<div class="layui-input-block">
+				<select name="operator" lay-filter="operator">
+					<option value="移动" selected="">&nbsp;移动</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">产品类型</label>
+			<div class="layui-input-block">
+				<select name="type" lay-filter="type">
+					<option value="1" th:selected="${product.type==1}">年付</option>
+					<option value="2" th:selected="${product.type==2}">季付</option>
+					<option value="3" th:selected="${product.type==3}">月付</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">选择套餐</label>
+			<div class="layui-input-block">
+				<select name="title" lay-filter="title" id="title">
+					<option value="0">--请选择</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">套餐价格</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="type"
+					th:value="${product.price}" readonly="readonly">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">优惠政策</label>
+			<div class="layui-input-block">
+				<textarea placeholder="请输入产品描述" readonly="readonly"
+					class="layui-textarea" name="discounts" id="discounts"
+					th:text="${product.discounts}"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<input type="hidden" name="id" id="productId"
+					th:value="${product.id}"> <input type="hidden"
+					name="iddiscounts" id="iddiscounts"
+					th:value="|${product.id}_${product.discounts}|" />
+				<button type="submit" class="layui-btn" lay-filter="next">下一步</button>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"
+		src="static/layui/layui.js"></script>
+	<script type="text/javascript">
+		var $form;
+		var form;
+		var $;
+		//加载套餐下拉列表
+		function loadProduct() {
+			var type = $form.find('select[name=type]').val();
+			var area = $form.find('select[name=area]').val();
+			var operator = $form.find('select[name=operator]').val();
+			console.log(type);
+			console.log(area);
+			$.ajax({
+				url : "/gaofeng/open/install/loadProduct",
+				type : "post",
+				dataType : "json",
+				async : false,
+				data : {
+					type : type,
+					area : area,
+					operator : operator
+				},
+				success : function(data) {
+					createSelect(data)
+				}
+			})
+		}
+
+		//创建下拉列表的option
+		function createSelect(data) {
+			var htmls = '';
+			if (data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					htmls += '<option value="'+data[i].id+'">' + data[i].title
+							+ '</option>'
+				}
+				$form.find('select[name=title]').empty();
+				$form.find('select[name=title]').append(htmls);
+				var productId = $("#productId").val();
+				if (!productId) {
+					loadDiscounts(data[0].id);
+				}
+				form.render('select');
+			} else {
+				$form.find('select[name=title]').empty();
+				htmls += '<option value="-1">--请选择</option>';
+				$form.find('select[name=title]').append(htmls);
+				$("#price").val("");
+				$("#discounts").val("");
+				form.render('select');
+			}
+		}
+
+		function loadDiscounts(productId) {
+			$.ajax({
+				url : "/gaofeng/home/product/findProduct",
+				type : "get",
+				dataType : "json",
+				async : false,
+				data : {
+					productId : productId
+				},
+				success : function(data) {
+					console.log(data);
+					$("#productId").val(data.data.id);
+					$("#price").val(data.data.price);
+					if (data.data.discounts) {
+						$("#discounts").val(data.data.discounts);
+					} else {
+						$("#discounts").val('暂无优惠');
+					}
+
+				}
+			})
+		}
+
+		layui.config({
+			base : "js/"
+		}).use([ 'form', 'layer', 'jquery' ], function() {
+			form = layui.form();
+			layer = layui.layer;
+			$ = layui.jquery;
+			$form = $('form');
+
+			//初始套餐信息
+			loadProduct();
+
+			form.on('select(type)', function(data) {
+				loadProduct();
+			});
+			form.on('select(area)', function(data) {
+				loadProduct();
+			});
+			form.on('select(operator)', function(data) {
+				loadProduct();
+			});
+
+			form.on('select(title)', function(data) {
+				console.log(data);
+				var productId = data.value;
+				loadDiscounts(productId);
+
+			});
+			/* 
+			form.on("submit(next)", function(data) {
+				console.log(data.field);
+				$.ajax({
+					type : 'POST',
+					url : '/gaofeng/open/install/next',
+					dataType : 'json',
+					data : JSON.stringify(data.field),
+					contentType: 'application/json',
+					async : true,
+					success : function(result) {
+						console.log(result.code);
+						if (result.code == 0) {
+							layer.msg('success:保存成功', {
+								icon : 1,
+								time : 1000
+							});
+							setTimeout(function() {
+								layer.closeAll("iframe");
+						 		//刷新父页面
+						 		parent.location.reload();
+							}, 800);
+						} else {
+							consol.alert(result.code);
+							layer.msg('eles:保存失败！' + result.message, {
+								icon : 2,
+								time : 1000
+							});
+						}
+					},
+					error : function(result, type) {
+						layer.msg('error:保存失败！', {
+							icon : 2,
+							time : 1000
+						});
+					}
+				});
+				console.log(data.field)
+				return false;
+			}) */
+
+		})
+	</script>
+</body>
+</html>

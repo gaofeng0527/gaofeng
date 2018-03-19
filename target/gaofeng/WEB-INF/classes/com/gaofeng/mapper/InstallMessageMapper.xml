@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaofeng.mapper.InstallMessageMapper">
+	<sql id="columns">
+		id as id,
+		order_id as orderId,
+		item_id as itemId,
+		uid as
+		userId,
+		uname as uname,
+		uphone as phone,
+		area as area,
+		city as city,
+		province as province,
+		address as address,
+		product_id as productId,
+		status as status,
+		create_time as createTime,
+		last_time as lastTime,
+		company_id as companyId,
+		acotr_user as acotrUser,
+		acotr_phone as
+		actorPhone,
+		description as description,
+		origin as origin
+	</sql>
+
+	<select id="findInstallById" resultType="com.gaofeng.pojo.InstallMessage">
+		select
+		<include refid="columns"></include>
+		from installs where id=#{id}
+	</select>
+
+	<insert id="addInstall">
+		INSERT INTO installs (order_id,
+		item_id,uid,uname,uphone,area,city,province,address,product_id,status,
+		create_time,last_time,company_id,acotr_user,acotr_phone,description,origin)
+		VALUES
+		(#{orderId},#{itemId},#{userId},#{uname},#{phone},#{area},#{city},#{province},#{address},
+		#{productId},0,now(),now(),#{companyId},#{acotrUser},#{acotrPhone},#{description},#{origin})
+	</insert>
+
+	<select id="findAllInstallMess" resultType="com.gaofeng.pojo.InstallMessage">
+		select
+		<include refid="columns"></include>
+		from installs where company_id = #{companyId}
+	</select>
+	<resultMap type="com.gaofeng.pojo.InstallMessage" id="allInstallMap">
+		<id column="i_id" property="id" />
+		<result column="i_uname" property="uname" />
+		<result column="i_uphone" property="phone" />
+		<result column="i_address" property="address" />
+		<result column="i_status" property="status" />
+		<result column="i_create_time" property="createTime" />
+		<result column="i_origin" property="origin" />
+		<result column="i_acotrUser" property="acotrUser" />
+		<association property="product" javaType="com.gaofeng.pojo.Product">
+			<id column="p_id" property="id" />
+			<result column="p_title" property="title" />
+			<result column="p_area" property="area" />
+			<result column="p_city" property="city" />
+			<result column="p_type" property="type" />
+			<result column="p_status" property="status" />
+			<result column="p_operator" property="operator" />
+		</association>
+		<association property="user" javaType="com.gaofeng.pojo.WxUser">
+			<id column="w_id" property="id" />
+			<result column="w_uname" property="uname" />
+			<result column="w_uphone" property="uphone" />
+			<result column="w_openid" property="openId" />
+		</association>
+	</resultMap>
+
+	<select id="findAllInstallMesss" resultMap="allInstallMap">
+		select i.id as
+		i_id,i.uname as i_uname,i.uphone as i_uphone,i.acotrUser as
+		i_acotrUser,p.area as
+		p_area,p.city as
+		p_city,p.pname as
+		p_title,i.address as i_address,i.origin as
+		i_origin,p.id as
+		p_id,p.ptype
+		as p_type,p.status as p_status,p.operator
+		as
+		p_operator,i.status
+		as
+		i_status,i.create_time as i_create_time,w.id
+		as
+		w_id,w.uname as
+		w_uname,w.uphone as w_uphone,w.openid as w_openid
+		from
+		installs as i
+		join product as p on i.product_id = p.id join wxuser
+		as w
+		on i.uid =
+		w.id
+	</select>
+
+	<resultMap type="com.gaofeng.pojo.InstallMessage" id="installAndProductMap">
+		<id column="i_id" property="id" />
+		<result column="i_uname" property="uname" />
+		<result column="i_uphone" property="phone" />
+		<result column="i_area" property="area" />
+		<result column="i_address" property="address" />
+		<result column="i_status" property="status" />
+		<result column="i_create_time" property="createTime" />
+		<result column="i_origin" property="origin" />
+		<result column="i_acotrUser" property="acotrUser" />
+		<result column="i_acotrPhone" property="acotrPhone" />
+		<result column="i_supervisor" property="supervisor" />
+		<result column="i_card" property="card" />
+		<association property="product" javaType="com.gaofeng.pojo.Product">
+			<id column="p_id" property="id" />
+			<result column="p_title" property="title" />
+			<result column="p_city" property="city" />
+			<result column="p_type" property="type" />
+			<result column="p_status" property="status" />
+			<result column="p_operator" property="operator" />
+		</association>
+	</resultMap>
+
+	<select id="findAllInstallMes" resultMap="installAndProductMap">
+		select i.id as
+		i_id,i.uname as i_uname,i.uphone as i_uphone,i.area as
+		i_area,i.acotr_user as i_acotrUser,i.acotr_phone as
+		i_acotrPhone,i.supervisor as i_supervisor,i.u_card as i_card,p.city
+		as
+		p_city,p.pname as p_title,i.address as i_address,i.origin as
+		i_origin,p.id as p_id,p.ptype
+		as p_type,p.status as p_status,p.operator
+		as p_operator,i.status
+		as
+		i_status,i.create_time as i_create_time from
+		installs as i
+		join product as p on i.product_id = p.id
+	</select>
+
+	<select id="findByInstall" resultMap="installAndProductMap">
+		select i.id as
+		i_id,i.uname as i_uname,i.uphone as i_uphone,i.area as
+		i_area,i.acotr_user as i_acotrUser,i.acotr_phone as
+		i_acotrPhone,i.supervisor as i_supervisor,i.u_card as i_card,p.city
+		as
+		p_city,p.pname as
+		p_title,i.address as i_address,i.origin as
+		i_origin,p.id as
+		p_id,p.ptype
+		as p_type,p.status as p_status,p.operator
+		as
+		p_operator,i.status
+		as
+		i_status,i.create_time as i_create_time from
+		installs as i
+		join product as p on i.product_id = p.id
+		where 1=1
+		<if test="null != uname">
+			and i.uname = #{uname}
+		</if>
+		<if test="null != phone">
+			and i.uphone = #{phone}
+		</if>
+		<if test="null != area">
+			and i.area = #{area}
+		</if>
+		<if test="status >= 0">
+			and i.status = #{status}
+		</if>
+	</select>
+
+	<update id="updateStatus">
+		update installs set status = #{status} where id =
+		#{id}
+	</update>
+
+	<update id="updateInstall">
+		update installs set uname = #{uname},uphone =
+		#{phone},address=#{address},status = #{status}
+		where id = #{id}
+	</update>
+
+</mapper>

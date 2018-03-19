@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaofeng.mapper.ProductMapper">
+
+	<sql id="columns">
+		id as id,
+		pname as title,
+		price as price,
+		city as city,
+		province as province,
+		area as area,
+		operator as operator,
+		ptype as type,
+		discounts as discounts,
+		dcoupon as dcoupon,
+		status as status,
+		add_time as
+		addTime,
+		company_id as companyId
+	</sql>
+
+	<select id="findAll" resultType="com.gaofeng.pojo.Product">
+		select
+		<include refid="columns" />
+		from product
+	</select>
+	
+	<select id="findByProduct" resultType="com.gaofeng.pojo.Product">
+		select
+		<include refid="columns" />
+		from product where 1=1
+		<if test="null != title">
+			and title like #{title}
+		</if>
+		<if test="null != area">
+			and area = #{area}
+		</if>
+		<if test="null != operator">
+			and operator = #{operator}
+		</if>
+		<if test="status >= 0">
+			and status = #{status}
+		</if>
+	</select>
+
+	<insert id="addProduct">
+		insert into product
+		(pname,price,area,operator,ptype,discounts,dcoupon,status,add_time,company_id)
+		values(#{title},#{price},#{area},#{operator},#{type},#{discounts},#{dcoupon},#{status},#{addTime},#{company.id})
+	</insert>
+
+	<delete id="deleteProduct">
+		delete from product where id = #{productId}
+	</delete>
+
+	<select id="findOneByProductId" resultType="com.gaofeng.pojo.Product">
+		select
+		<include refid="columns" />
+		from product where id = #{productId}
+	</select>
+
+	<update id="updateProduct">
+		update product set pname = #{title},price =
+		#{price},dcoupon = #{dcoupon},status = #{status},area =
+		#{area},operator = #{operator}
+		where id = #{id}
+	</update>
+
+	<insert id="addList" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		product(pname,price,area,operator,ptype,discounts,dcoupon,status,add_time,company_id)
+		values
+		<foreach collection="list" item="p" index="index" separator=",">
+			(#{p.title},#{p.price},#{p.area},#{p.operator},#{p.type},#{p.discounts},#{p.dcoupon},0,now(),1)
+		</foreach>
+	</insert>
+
+	<select id="findProductByTypeAndArea" resultType="com.gaofeng.pojo.Product">
+		select
+		<include refid="columns" />
+		from product
+		where ptype = #{type} and area = #{area} and operator = #{operator} and company_id =
+		#{companyId}
+	</select>
+</mapper>
